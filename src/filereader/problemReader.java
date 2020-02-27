@@ -23,19 +23,19 @@ import java.util.Map;
 
 class Exam
 {
-    int examId,examDuration;
+    int examId,examDuration,studentsCount=0;
     ArrayList<Integer> enrollmentList = new ArrayList<>();
     
     Exam(int id, int duration)
     {
         examId=id;
         examDuration=duration;
-
     }
     
     void addStudent(Integer student)
     {
         enrollmentList.add(student);
+        studentsCount++;
     }
 }
 
@@ -105,7 +105,7 @@ public class problemReader
                 {                    
                     case StreamTokenizer.TT_EOL:    
                         line = token.lineno()-1;
-                        System.out.println("Finished Reading Exam "+ (line-1) + "\n Students added : " + examVector.get(line-2).enrollmentList);
+                        System.out.println("Finished Reading Exam "+ (line-1) + "\n" + examVector.get(line-2).studentsCount + " student(s) added : " + examVector.get(line-2).enrollmentList);
                         token.nextToken();                        
                         examVector.add(new Exam(line,(int)token.nval));        
                         System.out.println("Exam "+ line + " added. Duration = " + examVector.get(line-1).examDuration);

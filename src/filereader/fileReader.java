@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package filereader;
+package itc2007.dataset.reader;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -20,13 +20,13 @@ import java.util.Map;
  *
  * @author PhDLab
  */
-public class problemReader 
+public class Itc2007DatrasetReader
 {    
     int numberOfExams,numberOfPeriods,numberOfRooms,examDuration;
-    List <Integer> exams = new ArrayList<>();
+    
     Map <Integer,List> studentMap = new HashMap<>();
     
-    problemReader(String file) throws IOException 
+    Itc2007DatrasetReader(String file) throws IOException 
     {
         InputStream in = getClass().getResourceAsStream(file);
         if (in == null) 
@@ -61,7 +61,7 @@ public class problemReader
          System.out.println("Exam 1 duration: "+examDuration);
         //Read Enrollments
         found=false;
-        int t=0;
+        int t=0,i=0;
         while(!found) 
         {
             if ((token.sval != null) && ((token.sval.compareTo("Periods") == 0)))
@@ -76,38 +76,35 @@ public class problemReader
             else
             {                
                 t = token.nextToken();
+                List <Integer> exams = new ArrayList<>();
                 
                 switch(t)
                 {                    
-                    case StreamTokenizer.TT_EOL:
-                        for(Integer xam:exams)
-                        {
-                            System.out.println("exams Arraylist now contains: "+xam);
-                        }
-                        System.out.println("List of Exams for student ["+(int)token.nval+"] : "+ studentMap.get(token.nval));
+                    case StreamTokenizer.TT_EOL:                                               
                         token.nextToken();
                         examDuration = (int)token.nval;
                         System.out.println("Exam "+ (token.lineno()-1) +" duration: "+examDuration);
-                        exams.clear();
                         break;
                     case StreamTokenizer.TT_NUMBER:  
-                        //System.out.println(studentMap.entrySet());
-                        Double tok = token.nval;
-                        if(!studentMap.containsKey(tok.intValue()))
+                        Integer currentStudent = (int)token.nval;
+                        if(!studentMap.containsKey(currentStudent))
                         {                            
-                            studentMap.put(tok.intValue(), new ArrayList());
-                            exams.add(token.lineno()-1);
+                            List <Integer> examList = new ArrayList();
+                            studentMap.put(currentStudent, examList);                            
                         }
-                        studentMap.get(tok.intValue()).add(token.lineno()-1);                                              
-                        
-                        System.out.println("nextToken():"+token.nval);
+                        studentMap.get(currentStudent).add(token.lineno()-1);
+                        //System.out.println("nextToken():"+token.nval);
+                        //System.out.println("List of Exams for student ["+currentStudent+"]? : "+ studentMap.get(currentStudent));                        
                         break;
-                }
+                }                
             }
         }
         
-        
-        
+        int studentCount=0;
+        for(Map.Entry<Integer,List> entry : studentMap.entrySet())            
+        {
+            System.out.println("Student "+ (++studentCount) + "{ " + entry.getKey() + "}: Exams = " + entry.getValue());
+        }
         
             
         //Read Periods
@@ -247,7 +244,7 @@ public class problemReader
     {
         try
         {
-            problemReader objProblemReader = new problemReader("C:/Users/PhDLab/Documents/NetBeansProjects/jMetal/resources/itc2007/exam_comp_set3.exam");
+            Itc2007DatrasetReader objItc2007DatrasetReader = new Itc2007DatrasetReader("C:/Users/Ahmad/Documents/NetBeansProjects/itc2007fileReader/exam_comp_set3.exam");
         }
         catch(Exception e)
         {

@@ -20,13 +20,13 @@ import java.util.Map;
  *
  * @author PhDLab
  */
-public class problemReader 
+public class problemReader
 {    
     int numberOfExams,numberOfPeriods,numberOfRooms,examDuration;
-    List <Integer> exams = new ArrayList<>();
+    
     Map <Integer,List> studentMap = new HashMap<>();
     
-    problemReader(String file) throws IOException 
+    Itc2007DatasetReader(String file) throws IOException 
     {
         InputStream in = getClass().getResourceAsStream(file);
         if (in == null) 
@@ -61,7 +61,7 @@ public class problemReader
          System.out.println("Exam 1 duration: "+examDuration);
         //Read Enrollments
         found=false;
-        int t=0,i=1;
+        int t=0;
         while(!found) 
         {
             if ((token.sval != null) && ((token.sval.compareTo("Periods") == 0)))
@@ -74,32 +74,35 @@ public class problemReader
                 found = true ;
             }                
             else
-            { 
+            {                
                 t = token.nextToken();
-                //System.out.println("Token  = "+token.toString());
+                
                 switch(t)
-                {
-                    case StreamTokenizer.TT_EOL:                        
+                {                    
+                    case StreamTokenizer.TT_EOL:                                               
                         token.nextToken();
                         examDuration = (int)token.nval;
-                        System.out.println("Exam "+ ++i +" duration: "+examDuration);
+                        System.out.println("Exam "+ (token.lineno()-1) +" duration: "+examDuration);
                         break;
                     case StreamTokenizer.TT_NUMBER:  
-                        Double tok = token.nval;
-                        if(studentMap.containsKey(tok.intValue()))
+                        Integer currentStudent = (int)token.nval;
+                        if(!studentMap.containsKey(currentStudent))
                         {                            
-                            exams.add(i);
-                            //studentMap.put(tok.intValue(), exams);
+                            List <Integer> examList = new ArrayList();
+                            studentMap.put(currentStudent, examList);                            
                         }
-                        else
-                        {
-                            studentMap.put(tok.intValue(), exams);
-                        }
-                        System.out.println("nextToken():"+token.nval);
+                        studentMap.get(currentStudent).add(token.lineno()-1);
                         break;
-                }
+                }                
             }
         }
+        
+        int studentCount=0;
+        for(Map.Entry<Integer,List> entry : studentMap.entrySet())            
+        {
+            System.out.println("Student "+ (++studentCount) + "{ " + entry.getKey() + "}: Exams = " + entry.getValue());
+        }
+        
             
         //Read Periods
         found=false;
@@ -238,7 +241,7 @@ public class problemReader
     {
         try
         {
-            problemReader objProblemReader = new problemReader("C:/Users/PhDLab/Documents/NetBeansProjects/jMetal/resources/itc2007/exam_comp_set3.exam");
+            problemReader objproblemReader = new problemReader("C:/Users/Ahmad/Documents/NetBeansProjects/itc2007fileReader/exam_comp_set3.exam");
         }
         catch(Exception e)
         {
